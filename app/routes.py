@@ -1,6 +1,3 @@
-import imp
-from pydoc import resolve
-from urllib import response
 from flask import request,abort
 from app import app
 from app.models import User
@@ -13,7 +10,6 @@ from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask import jsonify
 
-
 @app.route("/register", methods=["POST"])
 def register():
     data = request.json
@@ -21,6 +17,8 @@ def register():
     email = data.get("email")
     username = data.get("username")
     password = data.get("password")
+    phonenumber = data.get("phonenumber")
+    feedback = data.get("feedback")
     errors = {}
     
     if not email:
@@ -29,14 +27,18 @@ def register():
         errors["username"] = "Username is required!"
     if not password:
         errors["password"] = "Password is required!"
+    if not phonenumber:
+        errors["phonenumber"] = "Phonenumber is required!"
+    if not feedback:
+        errors["feedback"] = "Feedback is required!"    
 
     if len(errors.keys()) != 0:
         abort(400, {"errors": errors})
 
-    user = User(email=email, username=username,password=generate_password_hash(password))
+    user = User(email=email, username=username,password=generate_password_hash(password),phonenumber=phonenumber, feedback=feedback)
     db.session.add(user)
     db.session.commit()
-    return {"message": "User created"}, 201
+    return {"message": "User Account Succesfully Created!"}, 201
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -48,15 +50,33 @@ def login():
     if user:
         response = check_password_hash(user.password, password)
         if response:
-            access_token = create_access_token(identity= {"username": user.username, "email":user.email})
+            access_token = create_access_token(identity= 
+{"username": user.username, "email":user.email})
             return jsonify(access_token=access_token), 200
         else:
-            return {"message": "Invalid user credentials"}, 400    
+            return {"message": "Invalid User Credentials!"}, 400
+
+@app.route("/update/<id>", methods=["PUT"])
+@jwt_required()
+def update(id):
+    data = request.json
+    user = User.query.filter_by(id=id).first()
+    if user:
+        user.email= data.get("email")
+        user.username= data.get("username")
+        user.password= data.get("password")
+        user.phonenumber= data.get("phonenumber")
+        user.feedback= data.get("feeback")
+
+        db.session.commit()
+    return {"message":"User Details Updated Successfully!"}, 200
+    return {"message":"User not found"}, 404
+
 
 @app.route("/logout", methods=["POST", "GET"])
 @jwt_required()
 def logout():
-    response = jsonify({'msg':"Successfully logout"})
+    response = jsonify({'msg':"You have Successfully Logout!"})
     unset_jwt_cookies(response)
     return response,200     
 
