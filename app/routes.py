@@ -72,6 +72,16 @@ def update(id):
     return {"message":"User Details Updated Successfully!"}, 200
     return {"message":"User not found"}, 404
 
+@app.route("/delete", methods=['GET','POST'])
+@jwt_required()
+def delete(id):
+    user=User.query.filter_by(id=id).first()
+    if request.method == "POST":
+        if user:
+           db.session.delete(user)
+           db.session.commit()
+
+    return jsonify("User Has Been Deleted Successfully")
 
 @app.route("/logout", methods=["POST", "GET"])
 @jwt_required()
