@@ -1,10 +1,13 @@
+import imp
+from pydoc import resolve
+from urllib import response
 from flask import request,abort
 from app import app
 from app.models import User
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from app.models import db
-
+from flask_jwt_extended import unset_jwt_cookies
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
@@ -48,7 +51,14 @@ def login():
             access_token = create_access_token(identity= {"username": user.username, "email":user.email})
             return jsonify(access_token=access_token), 200
         else:
-            return {"message": "Invalid user credentials"}, 400
+            return {"message": "Invalid user credentials"}, 400    
+
+@app.route("/logout", methods=["POST", "GET"])
+@jwt_required()
+def logout():
+    response = jsonify({'msg':"Successfully logout"})
+    unset_jwt_cookies(response)
+    return response,200     
 
 @app.route("/index", methods=["GET"])
 @jwt_required()
