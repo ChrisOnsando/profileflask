@@ -80,8 +80,7 @@ def delete(id):
         if user:
            db.session.delete(user)
            db.session.commit()
-
-    return jsonify("User Has Been Deleted Successfully")
+           return {"message":"User Details Deleted Successfully!"}, 200
 
 @app.route("/logout", methods=["POST", "GET"])
 @jwt_required()
