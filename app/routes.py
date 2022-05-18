@@ -69,7 +69,7 @@ def update(id):
         user.feedback= data.get("feeback")
 
         db.session.commit()
-    return {"message":"User Details Updated Successfully!"}, 200
+        return {"message":"User Details Updated Successfully!"}, 200
     return {"message":"User not found"}, 404
 
 @app.route("/delete", methods=['GET','POST'])
