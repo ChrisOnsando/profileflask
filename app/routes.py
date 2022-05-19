@@ -13,7 +13,7 @@ from flask import jsonify
 @app.route("/register", methods=["POST"])
 def register():
     data = request.json
-    print(data)
+   
     email = data.get("email")
     username = data.get("username")
     password = data.get("password")
@@ -38,7 +38,7 @@ def register():
     user = User(email=email, username=username,password=generate_password_hash(password),phonenumber=phonenumber, feedback=feedback)
     db.session.add(user)
     db.session.commit()
-    return {"message": "User Account Succesfully Created!"}, 201
+    return {"message": "User Account Successfully Created!"}, 201
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -70,7 +70,7 @@ def update(id):
 
         db.session.commit()
         return {"message":"User Details Updated Successfully!"}, 200
-    return {"message":"User not found"}, 404
+    # return {"message":"User not found"}, 404
 
 @app.route("/delete", methods=['GET','POST'])
 @jwt_required()
